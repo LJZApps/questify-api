@@ -8,14 +8,12 @@ use Illuminate\Database\Seeder;
 class PostSeeder extends Seeder
 {
     /**
-     * @throws \DateMalformedStringException
      */
-    public function run()
+    public function run(): void
     {
         Post::factory()->create([
-            "created_by" => 2,
+            "created_by" => 1,
             "text" => "Test",
-            "created_at" => \Symfony\Component\Clock\now(),
         ]);
     }
 }

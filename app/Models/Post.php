@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
@@ -18,9 +17,9 @@ class Post extends Model
         'updated_at',
     ];
 
-    public $timestamps = false; // Da wir die Timestamps manuell setzen
+    public $timestamps = true; // Da wir die Timestamps manuell setzen
 
-    protected $dates = [
+    protected array $dates = [
         'created_at',
         'updated_at',
     ];
@@ -30,17 +29,13 @@ class Post extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function comments(): BelongsToMany
-    {
-        return $this->belongsToMany(Post::class, 'post_comment', 'post_id', 'comment_id');
-    }
-
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
         static::creating(function ($post) {
             $post->created_at = now();
+            $post->updated_at = null;
         });
     }
 }
