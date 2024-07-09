@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use function PHPUnit\Framework\isNull;
 
 class PostController extends Controller
 {
-    public function getAll()
+    public function getAll(): JsonResponse
     {
         $posts = Post::orderBy('created_at', 'desc')->get();
         if ($posts->count() < 1) {
@@ -28,10 +29,9 @@ class PostController extends Controller
         $post = Post::find($id);
 
         if (isNull($post)) {
-            return response()->json(
-                data: ["success" => false, "message" => "Post not found."],
-                status: 404
-            );
+            return response()->json([
+                "error_message" => "Post not found."
+            ], 404);
         }
 
         return response()->json($post);
@@ -40,10 +40,26 @@ class PostController extends Controller
     public function createPost(Request $request)
     {
         $post = Post::create([
-            'created_by' => 1,
+            'created_by' => auth()->user()->id,
             'text' => $request->input('text')
         ]);
 
         return response()->json($post, 201);
+    }
+
+    public function editPost(Request $request, int $id)
+    {
+        $post = Post::find($id);
+
+        if (isNull($post)) {
+            return response()->json([
+                "error_message" => "Post not found."
+            ], 404);
+        }
+
+        $post->text = $request->input('text');
+        $post->save();
+
+        return response()->json(["success" => true]);
     }
 }

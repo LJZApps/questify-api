@@ -5,40 +5,68 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $loginUserData = $request->validate([
-            'email'=>'required|string|email',
-            'password'=>'required|min:8'
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'password' => 'required|min:8'
         ]);
-        $user = User::where('email',$loginUserData['email'])->first();
-        if(!$user || !Hash::check($loginUserData['password'],$user->password)){
+
+        if ($validator->fails()) {
             return response()->json([
-                'message' => 'Invalid Credentials'
-            ],401);
+                "errors" => $validator->errors()
+            ], 401);
         }
-        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+
+        $loginUserData = $validator->validated();
+
+        $user = User::where(function ($query) use ($loginUserData) {
+            $query->where('email', $loginUserData['username'])
+                ->orWhere('username', $loginUserData['username']);
+        })->first();
+
+        if (!$user || !Hash::check($loginUserData['password'], $user->password)) {
+            return response()->json([
+                "message" => "Invalid Credentials"
+            ], 401);
+        }
+        $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
         return response()->json([
-            'access_token' => $token,
+            "success" => true,
+            "access_token" => $token,
         ]);
     }
 
     public function register(Request $request){
-        $registerUserData = $request->validate([
-            'name'=>'required|string',
-            'email'=>'required|string|email|unique:users',
-            'password'=>'required|min:8'
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|min:8',
+            'display_name' => 'required|string',
+            'about_me' => 'string'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 401);
+        }
+
+        $registerUserData = $validator->validated();
         $user = User::create([
-            'name' => $registerUserData['name'],
+            'username' => $registerUserData['username'],
             'email' => $registerUserData['email'],
             'password' => Hash::make($registerUserData['password']),
+            'display_name' => $registerUserData['display_name'],
+            'about_me' => $registerUserData['about_me']
         ]);
         return response()->json([
-            'success' => true,
+            "success" => true,
+            "user" => $user
         ]);
     }
 }
