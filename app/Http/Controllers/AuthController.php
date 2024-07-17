@@ -18,8 +18,9 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                "errors" => $validator->errors()
-            ], 401);
+                "error_code" => "invalid_credentials",
+                "error_message" => "Username or password are invalid."
+            ]);
         }
 
         $loginUserData = $validator->validated();
@@ -31,8 +32,9 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($loginUserData['password'], $user->password)) {
             return response()->json([
-                "message" => "Invalid Credentials"
-            ], 401);
+                "error_code" => "invalid_credentials",
+                "error_message" => "Username or password are invalid."
+            ]);
         }
         $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
         return response()->json([
