@@ -1,6 +1,6 @@
 # Allgemeine Build-Einstellungen
 [build]
-command = "composer install && php artisan build" # Befehl zum Bauen der Anwendung
+command = "composer install && php artisan serve" # Befehl zum Bauen der Anwendung
 publish = "public" # Verzeichnis, das auf Netlify veröffentlicht wird
 environment = { PHP_VERSION = "8.2" } # Gewünschte PHP-Version
 
