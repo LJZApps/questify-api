@@ -1,0 +1,15 @@
+# Allgemeine Build-Einstellungen
+[build]
+command = "composer install && php artisan build" # Befehl zum Bauen der Anwendung
+publish = "public" # Verzeichnis, das auf Netlify veröffentlicht wird
+environment = { PHP_VERSION = "8.2" } # Gewünschte PHP-Version
+
+# Einstellungen für Redirects und Rewrites
+[[redirects]]
+from = "/*"
+to = "/index.php"
+status = 200 # Rewrites alle Anfragen an index.php (wichtig für Laravel)
+
+# Einstellungen für Plugins (falls benötigt)
+[[plugins]]
+package = "@netlify/plugin-lambda"
