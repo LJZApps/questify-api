@@ -1,7 +1,7 @@
 # Allgemeine Build-Einstellungen
 [build]
-command = "composer install && php artisan view:cache && php artisan config:cache"
-publish = "public" # Verzeichnis, das auf Netlify veröffentlicht wird
+command = "mkdir -p bootstrap/cache storage/framework/views && composer install && php artisan view:cache && php artisan config:cache"
+publish = "public"
 environment = { PHP_VERSION = "8.2" } # Gewünschte PHP-Version
 
 # Einstellungen für Redirects und Rewrites
