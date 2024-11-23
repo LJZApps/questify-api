@@ -24,7 +24,7 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-    public function getSinglePost(int $id)
+    public function getSinglePost(int $id): JsonResponse
     {
         $post = Post::find($id);
 
@@ -37,7 +37,7 @@ class PostController extends Controller
         return response()->json($post);
     }
 
-    public function createPost(Request $request)
+    public function createPost(Request $request): JsonResponse
     {
         $post = Post::create([
             'created_by' => auth()->user()->id,
@@ -47,9 +47,9 @@ class PostController extends Controller
         return response()->json($post, 201);
     }
 
-    public function editPost(Request $request, int $id)
+    public function editPost(Request $request, int $id): JsonResponse
     {
-        $post = Post::find($id);
+        $post = (new \App\Models\Post)->find($id);
 
         if (isNull($post)) {
             return response()->json([
